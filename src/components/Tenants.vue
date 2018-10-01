@@ -15,7 +15,8 @@ export default {
   name: 'tenants',
   data() {
       return {
-          tenants: []
+          tenants: [],
+          plots: []
       }
   },
   created() {
@@ -23,6 +24,18 @@ export default {
           snapshot.forEach(doc => {
               let tenant = doc.data();
               tenant.id = doc.id;
+              let plots = doc.data().plots;
+              if (plots && plots.length > 0) {
+                let i = 0;
+                for (i = 0; i < plots.length; i++) {
+                  plots[i].get().then(doc => {
+                      console.log(doc.data());
+                      doc.data().tenant.get().then(tenant => {
+                        console.log(tenant.data().lastName);
+                      })
+                    })
+                  }
+              }
               this.tenants.push(tenant);
       })
     })
