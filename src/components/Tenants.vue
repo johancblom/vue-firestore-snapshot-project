@@ -3,7 +3,7 @@
     <h1>This is the tenants page</h1>
     <ul>
         <li v-for="tenant in tenants" :key="tenant.id">
-            <span>{{tenant.lastName}}</span>
+            <router-link :to="{ name: 'ViewTenant', params: {tenant_id: tenant.id}}">{{tenant.lastName}}</router-link>
         </li>
     </ul>
   </div>
