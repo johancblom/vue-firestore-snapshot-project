@@ -1,8 +1,23 @@
 <template>
-    <div>Edit Tenant
+    <div class="edit-tenant container">
+        <h2>Edit Tenant</h2>
         <form @submit.prevent="editTenant" v-if="tenant">
-            <label for="last-name">Last Name</label>
-            <input type="text" name="last-name" v-model="lastName">
+            <div class="field">
+                <label for="last-name">Last Name</label>
+                <input type="text" name="last-name" v-model="tenant.lastName">
+            </div>
+            <div v-for="(plot, index) in tenant.plots" class="field plot" :key="index">
+                <label for="plot">Plot:</label>
+                <input type="text" name="plot" v-model="tenant.plots[index].id">
+                <i class="material-icons delete" @click="deletePlot(plot.id)">delete</i>
+            </div>
+            <div v-for="(plot, index) in availablePlots" class="field plot" :key="index">
+                <label for="plotToAdd">Plot to add:</label>
+                <input type="text" name="plotToAdd" :value="plot.id">
+                <i class="material-icons add" @click="addPlot(plot)">add</i>
+            </div>
+            <div class="red-text">{{feedback}}</div>
+            <input type="submit" class="btn" value="Submit">
         </form>
     </div>
 </template>
@@ -14,30 +29,97 @@ export default {
     data () {
         return {
             tenant: null,
-            lastName: null,
-            ref: null
+            tenantRef: null,
+            feedback: null,
+            availablePlots: []
         }
     },
     created() {
-        this.ref = db.collection('tenants').doc(this.$route.params.tenant_id);
-        this.ref.get().then(doc => {
-                console.log(doc.data())
+        this.tenantRef = db.collection('tenants').doc(this.$route.params.tenant_id);
+        const nullTenantRef = db.collection('tenants').doc('nullTenant')
+        db.collection('plots').where('tenant', '==', nullTenantRef).get().then(plots => {
+            plots.forEach(plot => {
+                console.log(plot.id) + '=>'+ plot.data();
+                this.availablePlots.push(plot);
+            })
+        })
+        this.tenantRef.get().then(doc => {
                 this.tenant = doc.data()
-                this.lastName = doc.data().lastName
-                this.tenant.id = doc.id
-        });
+       });
     },
     methods: {
         editTenant() {
-            if (this.lastName) {
-                this.ref.set ({
-                    lastName: this.lastName
+            if (this.tenant.lastName) {
+                this.feedback = 'last name supplied'
+                this.tenantRef.set ({
+                    lastName: this.tenant.lastName,
+                    plots: this.tenant.plots
                 }).then(doc => 
-                    console.log(doc))
+                    this.$router.push({name: 'home'}))
+                .catch(err =>
+                console.log(err))
+                    this.feedback = null;
+            } else {
+                this.feedback = 'No last name supplied'
             }
+        },
+        deletePlot(thePlot){
+            this.tenant.plots = this.tenant.plots.filter(plot => {
+                console.log("plots id: " + plot.id, thePlot)
+                return plot.id != thePlot
+            })
+
+        },
+        addPlot(thePlot){
+            console.log('addPlot' + thePlot.id);
+            this.tenant.plots.push(thePlot);
+            this.availablePlots = this.availablePlots.filter(plot => {
+                return (plot.id != thePlot.id)
+            })
         }
     }
 }
 </script>
 <style>
+.edit-tenant{
+
+  margin-top: 60px;
+
+  padding: 20px;
+
+  max-width: 500px;
+
+}
+
+.edit-tenant h2{
+
+  font-size: 2em;
+
+  margin: 20px auto;
+
+}
+
+.edit-tenant .field{
+
+  margin: 20px auto;
+
+  position: relative;
+
+}
+
+.edit-tenant .delete, .add{
+
+  position: absolute;
+
+  right: 0;
+
+  bottom: 16px;
+
+  color: #aaa;
+
+  font-size: 1.4em;
+
+  cursor: pointer;
+
+}
 </style>
