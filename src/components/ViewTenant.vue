@@ -1,6 +1,6 @@
 <template>
     <div>View Tenant
-        <h2>{{tenant.lastName}}</h2>
+        <h2 v-if="tenant">{{tenant.lastName}}</h2>
         </div>
 </template>
 <script>
