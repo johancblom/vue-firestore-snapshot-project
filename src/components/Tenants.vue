@@ -3,7 +3,7 @@
     <h1>This is the tenants page</h1>
     <ul>
         <li v-for="tenant in tenants" :key="tenant.id">
-            <router-link :to="{ name: 'ViewTenant', params: {tenant_id: tenant.id}}">{{tenant.lastName}}</router-link>
+            <router-link :to="{ name: 'EditTenant', params: {tenant_id: tenant.id}}">{{tenant.lastName}}</router-link>
         </li>
     </ul>
   </div>
@@ -29,11 +29,8 @@ export default {
                 let i = 0;
                 for (i = 0; i < plots.length; i++) {
                   plots[i].get().then(doc => {
-                      console.log(doc.data());
-                      doc.data().tenant.get().then(tenant => {
-                        console.log(tenant.data().lastName);
-                      })
-                    })
+                    console.log(doc.id, doc.data().size)
+                  })
                   }
               }
               this.tenants.push(tenant);
