@@ -9,7 +9,7 @@
             <div v-for="(plot, index) in tenantPlots" class="field plot" :key="index">
                 <label for="plot">Plot:</label>
                 <input type="text" name="plot" :value="plot.id">
-                <i class="material-icons delete" @click="deletePlot(plot.id)">delete</i>
+                <i class="material-icons delete" @click="deletePlot(plot)">delete</i>
             </div>
             <div v-for="(plot, index) in availablePlots" class="field plot" :key="index">
                 <label for="plotToAdd">Plot to add:</label>
@@ -31,6 +31,7 @@ export default {
             tenant: null,
             tenantPlots: [],
             tenantRef: null,
+            plotRef: null,
             feedback: null,
             availablePlots: []
         }
@@ -39,9 +40,9 @@ export default {
         this.tenantRef = db.collection('tenants').doc(this.$route.params.tenant_id);
                 this.tenantRef.get().then(doc => {
                 this.tenant = doc.data()
+                this.tenant.id = doc.id
                 db.collection('plots').where('tenant', '==', this.$route.params.tenant_id).get().then(plots => {
                     plots.forEach(plot => {
-                    console.log("created: " + plot.id);
                     let thisPlot = {
                         id: plot.id
                     }
@@ -49,11 +50,9 @@ export default {
                 })
             });
        });
-        const nullTenantRef = db.collection('tenants').doc('nullTenant')
-        
-        db.collection('plots').where('tenant', '==', nullTenantRef).get().then(plots => {
+        this.plotRef = db.collection('plots')
+        this.plotRef.where('tenant', '==', "nobody").get().then(plots => {
             plots.forEach(plot => {
-                console.log(plot.id) + '=>'+ plot.data();
                 this.availablePlots.push(plot);
             })
         })
@@ -65,7 +64,6 @@ export default {
                 this.feedback = 'last name supplied'
                 this.tenantRef.set ({
                     lastName: this.tenant.lastName,
-                    plots: this.tenant.plots
                 }).then(doc => 
                     this.$router.push({name: 'home'}))
                 .catch(err =>
@@ -79,15 +77,22 @@ export default {
             this.tenantPlots = this.tenantPlots.filter(plot => {
                 console.log("plots id: " + plot.id, thePlot)
                 console.log(plot.id != thePlot)
-                return plot.id != thePlot
+                return plot.id != thePlot.id
             })
+            db.doc(`plots/${thePlot.id}`).set({
+                tenant: "nobody"
+            })
+            this.availablePlots = [...this.availablePlots, thePlot]
 
         },
         addPlot(thePlot){
             console.log('addPlot' + thePlot.id);
-            this.tenant.plots.push(thePlot);
+            this.tenantPlots.push(thePlot);
             this.availablePlots = this.availablePlots.filter(plot => {
                 return (plot.id != thePlot.id)
+            })
+            db.doc(`plots/${thePlot.id}`).set({
+                tenant: this.tenant.id
             })
         }
     }
