@@ -6,12 +6,12 @@
                 <label for="last-name">Last Name</label>
                 <input type="text" name="last-name" v-model="tenant.lastName">
             </div>
-            <div v-for="(plot, index) in tenantPlots" class="field plot" :key="index">
+            <div v-for="(plot) in tenantPlots" class="field plot" :key="plot.id">
                 <label for="plot">Plot:</label>
                 <input type="text" name="plot" :value="plot.id">
                 <i class="material-icons delete" @click="deletePlot(plot)">delete</i>
             </div>
-            <div v-for="(plot, index) in availablePlots" class="field plot" :key="index">
+            <div v-for="(plot) in availablePlots" class="field plot" :key="plot.id">
                 <label for="plotToAdd">Plot to add:</label>
                 <input type="text" name="plotToAdd" :value="plot.id">
                 <i class="material-icons add" @click="addPlot(plot)">add</i>
@@ -64,8 +64,11 @@ export default {
                 this.feedback = 'last name supplied'
                 this.tenantRef.set ({
                     lastName: this.tenant.lastName,
-                }).then(doc => 
-                    this.$router.push({name: 'home'}))
+                }).then(doc => {
+                    this.availablePlots.forEach(plot => db.doc(`plots/${plot.id}`).set({tenant: "nobody"}))
+                    this.tenantPlots.forEach(plot => db.doc(`plots/${plot.id}`).set({tenant: this.tenant.id}))
+                    this.$router.push({name: 'home'})
+                })
                 .catch(err =>
                 console.log(err))
                     this.feedback = null;
@@ -79,9 +82,6 @@ export default {
                 console.log(plot.id != thePlot)
                 return plot.id != thePlot.id
             })
-            db.doc(`plots/${thePlot.id}`).set({
-                tenant: "nobody"
-            })
             this.availablePlots = [...this.availablePlots, thePlot]
 
         },
@@ -90,9 +90,6 @@ export default {
             this.tenantPlots.push(thePlot);
             this.availablePlots = this.availablePlots.filter(plot => {
                 return (plot.id != thePlot.id)
-            })
-            db.doc(`plots/${thePlot.id}`).set({
-                tenant: this.tenant.id
             })
         }
     }
