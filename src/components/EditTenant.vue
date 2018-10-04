@@ -6,9 +6,9 @@
                 <label for="last-name">Last Name</label>
                 <input type="text" name="last-name" v-model="tenant.lastName">
             </div>
-            <div v-for="(plot, index) in tenant.plots" class="field plot" :key="index">
+            <div v-for="(plot, index) in tenantPlots" class="field plot" :key="index">
                 <label for="plot">Plot:</label>
-                <input type="text" name="plot" v-model="tenant.plots[index].id">
+                <input type="text" name="plot" :value="plot.id">
                 <i class="material-icons delete" @click="deletePlot(plot.id)">delete</i>
             </div>
             <div v-for="(plot, index) in availablePlots" class="field plot" :key="index">
@@ -29,6 +29,7 @@ export default {
     data () {
         return {
             tenant: null,
+            tenantPlots: [],
             tenantRef: null,
             feedback: null,
             availablePlots: []
@@ -36,16 +37,27 @@ export default {
     },
     created() {
         this.tenantRef = db.collection('tenants').doc(this.$route.params.tenant_id);
+                this.tenantRef.get().then(doc => {
+                this.tenant = doc.data()
+                db.collection('plots').where('tenant', '==', this.$route.params.tenant_id).get().then(plots => {
+                    plots.forEach(plot => {
+                    console.log("created: " + plot.id);
+                    let thisPlot = {
+                        id: plot.id
+                    }
+                    this.tenantPlots.push(thisPlot);
+                })
+            });
+       });
         const nullTenantRef = db.collection('tenants').doc('nullTenant')
+        
         db.collection('plots').where('tenant', '==', nullTenantRef).get().then(plots => {
             plots.forEach(plot => {
                 console.log(plot.id) + '=>'+ plot.data();
                 this.availablePlots.push(plot);
             })
         })
-        this.tenantRef.get().then(doc => {
-                this.tenant = doc.data()
-       });
+
     },
     methods: {
         editTenant() {
@@ -64,8 +76,9 @@ export default {
             }
         },
         deletePlot(thePlot){
-            this.tenant.plots = this.tenant.plots.filter(plot => {
+            this.tenantPlots = this.tenantPlots.filter(plot => {
                 console.log("plots id: " + plot.id, thePlot)
+                console.log(plot.id != thePlot)
                 return plot.id != thePlot
             })
 
