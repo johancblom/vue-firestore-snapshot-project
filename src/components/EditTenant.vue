@@ -65,7 +65,7 @@ export default {
                 this.tenantRef.set ({
                     lastName: this.tenant.lastName,
                 }).then(doc => {
-                    this.availablePlots.forEach(plot => db.doc(`plots/${plot.id}`).set({tenant: "nobody"}))
+                    this.availablePlots.filter(plot => plot.changed ? db.doc(`plots/${plot.id}`).set({tenant: "nobody"}): null)
                     this.tenantPlots.forEach(plot => db.doc(`plots/${plot.id}`).set({tenant: this.tenant.id}))
                     this.$router.push({name: 'home'})
                 })
@@ -82,6 +82,7 @@ export default {
                 console.log(plot.id != thePlot)
                 return plot.id != thePlot.id
             })
+            thePlot.changed = true
             this.availablePlots = [...this.availablePlots, thePlot]
 
         },
