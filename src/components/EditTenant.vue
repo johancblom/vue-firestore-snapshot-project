@@ -7,7 +7,7 @@
                 <input type="text" name="last-name" v-model="tenant.lastName">
             </div>
             <div v-for="(plot) in tenantPlots" class="field plot" :key="plot.id">
-                <label for="plot">Plot:</label>
+                <label for="plot">Plot: (size: {{plot.size}})</label>
                 <input type="text" name="plot" :value="plot.id">
                 <i class="material-icons delete" @click="deletePlot(plot)">delete</i>
             </div>
@@ -44,7 +44,8 @@ export default {
                 db.collection('plots').where('tenant', '==', this.$route.params.tenant_id).get().then(plots => {
                     plots.forEach(plot => {
                     let thisPlot = {
-                        id: plot.id
+                        id: plot.id,
+                        size: plot.data().size
                     }
                     this.tenantPlots.push(thisPlot);
                 })
