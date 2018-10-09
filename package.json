@@ -7,7 +7,9 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "firebase": "^5.5.2",
+    "firebase": "^5.5.3",
+    "rxfire": "^3.0.5",
+    "rxjs": "^6.3.3",
     "vue": "^2.5.17",
     "vue-router": "^3.0.1"
   },
