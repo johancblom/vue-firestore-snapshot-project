@@ -24,29 +24,9 @@ export default {
   created() {
     const tenantsRef = db.collection('tenants');
     collectionData(tenantsRef, 'id')
-      .pipe(
-        tap(tenants => console.log('This is just an observable!'))
-      )
-      .subscribe(snapshot => {
-          snapshot.forEach(doc => {
-              console.log(doc);
-              if ((this.tenants.filter(tenant => tenant.id === doc.id)).length == 0) {
-                console.log('new tenant identified ', doc.type)
-                let tenant = doc;
-                tenant.id = doc.id;
-                let plots = doc.plots;
-                if (plots && plots.length > 0) {
-                  let i = 0;
-                  for (i = 0; i < plots.length; i++) {
-                    plots[i].get().then(doc => {
-                      console.log(doc.id, doc.data().size)
-                    })
-                    }
-                }
-                this.tenants.push(tenant);
-              }
+      .subscribe(tenants => {
+                this.tenants = tenants;
           })
-      })
   }
 }
 </script>
