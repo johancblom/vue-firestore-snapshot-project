@@ -1,9 +1,8 @@
 <template>
-  <div class="tenants">
+  <div class="tenants container">
     <h1>This is the tenants page</h1>
     <div class="row">
-      <div class="col s12 m6">
-        <div v-for="tenant in tenants" :key="tenant.id" class="card">
+        <div class="col s6 m3 card" v-for="tenant in tenants" :key="tenant.id">
           <div class="card-content">
             <span class="card-title">Name: {{tenant.lastName}}</span>
           </div>
@@ -12,7 +11,6 @@
             <div class="btn" v-on:click.prevent="remove(tenant.id)"><i class="material-icons">delete</i></div>
           </div>
         </div>
-      </div>
     </div>
   </div>
 </template>
@@ -64,6 +62,9 @@ export default {
 </script>
 
 <style scoped>
+.card {
+  margin: 20px;
+}
 #edit a {
   color: white;
 }
