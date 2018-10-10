@@ -1,11 +1,19 @@
 <template>
   <div class="tenants">
     <h1>This is the tenants page</h1>
-    <ul>
-        <li v-for="tenant in tenants" :key="tenant.id">
-            <router-link :to="{ name: 'EditTenant', params: {tenant_id: tenant.id}}">{{tenant.lastName}}</router-link>
-        </li>
-    </ul>
+    <div class="row">
+      <div class="col s12 m6">
+        <div v-for="tenant in tenants" :key="tenant.id" class="card">
+          <div class="card-content">
+            <span class="card-title">Name: {{tenant.lastName}}</span>
+          </div>
+          <div class="card-action">
+            <div class="btn" id="edit"><router-link :to="{ name: 'EditTenant', params: {tenant_id: tenant.id}}"><i class="material-icons">edit</i></router-link></div>
+            <div class="btn" v-on:click.prevent="remove(tenant.id)"><i class="material-icons">delete</i></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -19,34 +27,50 @@ export default {
   data() {
       return {
           tenants: [],
-          plots: []
+          plots: [],
+          tenantsRef: null
       }
   },
   created() {
-    const tenantsRef = db.collection('tenants');
-    collectionChanges(tenantsRef)
+    this.tenantsRef = db.collection('tenants');
+    collectionChanges(this.tenantsRef)
       .subscribe(snapshot => {
-                snapshot.forEach(doc => {
-                  if (doc.type === 'added') {
-                    console.log(doc.doc.id)
-                    let tenant = doc.doc.data();
-                    tenant.id = doc.doc.id;
+                snapshot.forEach(change => {
+                  if (change.type === 'added') {
+                    let tenant = change.doc.data();
+                    tenant.id = change.doc.id;
                     this.tenants.push(tenant)
                   }
-                  else if(doc.type === 'modified') {
-                    for (var key in doc.doc.data()) {
-                      Vue.set(this.tenants, doc.newIndex, {...this.tenants[doc.newIndex], [key]: doc.doc.data()[key]})
+                  else if(change.type === 'modified') {
+                    for (var key in change.doc.data()) {
+                      Vue.set(this.tenants, change.newIndex, {...this.tenants[change.newIndex], [key]: change.doc.data()[key]})
                     }
                   }
-                  else if (doc.type === 'removed') {
-                    this.tenants.splice(doc.oldIndex, 1)
+                  else if (change.type === 'removed') {
+                    console.log("removing change: " + change);
+                    this.tenants = this.tenants.filter(tenant => tenant.id != change.doc.id)
                   }
                 })
           })
+  },
+  methods: {
+    remove: function(id) {
+      this.tenantsRef.doc(id).delete().then(() => {
+        console.log("tenant successfully deleted!")
+      }).catch(err => console.log(err))
+    }
   }
 }
 </script>
 
-<style>
+<style scoped>
+#edit a {
+  color: white;
+}
+.btn {
+  margin: 0 5px;
+  background-color: #42b983;
+  max-width: 50px;
+}
 
 </style>
