@@ -11,8 +11,9 @@
 
 <script>
 import db from '@/firebase/init'
-import { collectionData } from 'rxfire/firestore'
+import { collectionData, collectionChanges } from 'rxfire/firestore'
 import { tap } from 'rxjs/operators'
+import Vue from 'vue'
 export default {
   name: 'tenants',
   data() {
@@ -23,9 +24,24 @@ export default {
   },
   created() {
     const tenantsRef = db.collection('tenants');
-    collectionData(tenantsRef, 'id')
-      .subscribe(tenants => {
-                this.tenants = tenants;
+    collectionChanges(tenantsRef)
+      .subscribe(snapshot => {
+                snapshot.forEach(doc => {
+                  if (doc.type === 'added') {
+                    console.log(doc.doc.id)
+                    let tenant = doc.doc.data();
+                    tenant.id = doc.doc.id;
+                    this.tenants.push(tenant)
+                  }
+                  else if(doc.type === 'modified') {
+                    for (var key in doc.doc.data()) {
+                      Vue.set(this.tenants, doc.newIndex, {...this.tenants[doc.newIndex], [key]: doc.doc.data()[key]})
+                    }
+                  }
+                  else if (doc.type === 'removed') {
+                    this.tenants.splice(doc.oldIndex, 1)
+                  }
+                })
           })
   }
 }
