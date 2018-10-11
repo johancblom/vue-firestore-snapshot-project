@@ -3,6 +3,10 @@
         <h2>Edit Tenant</h2>
         <form @submit.prevent="editTenant" v-if="tenant">
             <div class="field">
+                <label for="first-name">First Name</label>
+                <input type="text" name="first-name" v-model="tenant.firstName">
+            </div>
+            <div class="field">
                 <label for="last-name">Last Name</label>
                 <input type="text" name="last-name" v-model="tenant.lastName">
             </div>
@@ -64,6 +68,7 @@ export default {
             if (this.tenant.lastName) {
                 this.feedback = 'last name supplied'
                 this.tenantRef.set ({
+                    firstName: this.tenant.firstName,
                     lastName: this.tenant.lastName,
                 }).then(doc => {
                     this.availablePlots.filter(plot => plot.changed ? db.doc(`plots/${plot.id}`).set({tenant: "nobody"}): null)

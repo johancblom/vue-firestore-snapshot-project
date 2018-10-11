@@ -4,7 +4,8 @@
     <div class="row">
         <div class="col s6 m3 card" v-for="tenant in tenants" :key="tenant.id">
           <div class="card-content">
-            <span class="card-title">Name: {{tenant.lastName}}</span>
+            <span class="card-title">First Name: {{tenant.firstName}}</span>
+            <span class="card-title">Last Name: {{tenant.lastName}}</span>
           </div>
           <div class="card-action">
             <div class="btn" id="edit"><router-link :to="{ name: 'EditTenant', params: {tenant_id: tenant.id}}"><i class="material-icons">edit</i></router-link></div>
