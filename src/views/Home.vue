@@ -1,17 +1,11 @@
 <template>
   <div class="home">
-    <Tenants/>
+    <h1>Choose between Tenants, Plots and Prices</h1>
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import Tenants from '@/components/Tenants.vue'
-
 export default {
-  name: 'home',
-  components: {
-    Tenants
-  }
-}
+  name: "home"
+};
 </script>
