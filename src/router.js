@@ -7,6 +7,7 @@ import Tenants from "@/components/Tenants";
 import Plots from "@/components/Plots";
 import EditPlot from "@/components/EditPlot";
 import NewPlot from "@/components/NewPlot";
+import Signin from "@/components/Signin";
 
 Vue.use(Router);
 
@@ -57,6 +58,11 @@ export default new Router({
       path: "/new-plot",
       name: "NewPlot",
       component: NewPlot
+    },
+    {
+      path: "/signin",
+      name: "Signin",
+      component: Signin
     }
   ]
 });

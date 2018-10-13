@@ -1,5 +1,6 @@
 import firebase from 'firebase'
 import firestore from 'firebase/firestore';
+import auth from 'firebase/auth';
 
 var config = {
     apiKey: "AIzaSyDeAGhDmJC3VelkRDnOpikHWewM2LfiXnw",
@@ -13,4 +14,10 @@ var config = {
 const firebaseApp = firebase.initializeApp(config);
 firebaseApp.firestore().settings({ timestampsInSnapshots: true});
 
-export default firebaseApp.firestore();
+const db = firebaseApp.firestore()
+const fireAuth = firebaseApp.auth()
+
+export {
+  db as default,
+  fireAuth
+}
