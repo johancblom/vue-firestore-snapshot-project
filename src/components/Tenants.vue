@@ -2,16 +2,26 @@
   <div class="tenants container">
     <h1>This is the tenants page</h1>
     <div class="row">
-        <div class="col s6 m3 card" v-for="tenant in tenants" :key="tenant.id">
-          <div class="card-content">
-            <span class="card-title">First Name: {{tenant.firstName}}</span>
-            <span class="card-title">Last Name: {{tenant.lastName}}</span>
-          </div>
-          <div class="card-action">
-            <div class="btn" id="edit"><router-link :to="{ name: 'EditTenant', params: {tenant_id: tenant.id}}"><i class="material-icons">edit</i></router-link></div>
-            <div class="btn" v-on:click.prevent="remove(tenant.id)"><i class="material-icons">delete</i></div>
+                <div class="card" v-for="tenant in tenants" :key="tenant.id">
+
+        <div class="col s6 m3">
+            <div class="card-content">
+              <p >First Name: {{tenant.firstName}}</p>
+              <p >Last Name: {{tenant.lastName}}</p>
+            </div>
+            <div class="card-action">
+              <div class="btn" id="edit"><router-link :to="{ name: 'EditTenant', params: {tenant_id: tenant.id}}"><i class="material-icons">edit</i></router-link></div>
+              <a class="btn-floating halfway-fab waves-effect waves-light red" :click="remove(tenant.id)"><i :click="remove(tenant.id)" class="material-icons">delete</i></a>
+            </div>
+
           </div>
         </div>
+    </div>
+    
+    <div class="fixed-action-btn">
+      <router-link :to="{ name: 'NewTenant'}" class="btn-floating btn-large red">
+        <i class="large material-icons">add</i>
+      </router-link>
     </div>
   </div>
 </template>

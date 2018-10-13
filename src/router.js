@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
 import EditTenant from '@/components/EditTenant'
+import NewTenant from '@/components/NewTenant'
 
 Vue.use(Router)
 
@@ -26,6 +27,11 @@ export default new Router({
       path: '/edit-tenant/:tenant_id',
       name: 'EditTenant',
       component: EditTenant
+    },
+    {
+      path: '/new-tenant',
+      name: 'NewTenant',
+      component: NewTenant
     }
   ]
 })
