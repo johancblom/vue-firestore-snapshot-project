@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "firebase": "^5.5.3",
+    "firebase-cli": "^1.2.0",
     "rxfire": "^3.0.5",
     "rxjs": "^6.3.3",
     "vue": "^2.5.17",
