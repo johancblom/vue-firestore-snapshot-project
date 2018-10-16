@@ -1,0 +1,119 @@
+<template>
+  <div class="users container">
+    <form v-on:submit.prevent="getfilteredData">
+      <div class="row">
+        <div class="col s8">
+          <span class="title left">All users</span>
+        </div>
+        <div class="col s1">
+          <button type="submit" class="btn btn-primary green"><i class="material-icons">search</i></button>
+        </div>
+        <div class="col s3">
+          <input type="text" class="form-control" placeholder="Enter a name  ..." v-model="search">
+        </div>
+      </div>
+    </form>
+    <div class="row">
+        <div class="col s6 m3" v-for="user in filteredUsers" :key="user.id">
+          <div class="card" >
+            <div class="card-content">
+              <p id="first-name">{{user.firstName}}</p>
+              <p id="last-name">{{user.lastName | capitalize}}</p>
+              <p id="disabled">{{user.disabled}}</p>
+              <p id="level">{{user.level}}</p>
+            </div>
+            <!-- <div class="card-action">
+              <router-link class="btn-floating left halfway-fab waves-effect green" :to="{ name: 'EditTenant', params: {tenant_id: tenant.id}}"><i class="material-icons">edit</i></router-link>
+              <a class="btn-floating halfway-fab waves-effect waves-light red" @click="remove(tenant.id)"><i class="material-icons">delete</i></a>
+            </div> -->
+          </div>
+        </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import db from "@/firebase/init";
+import { collectionData, collectionChanges } from "rxfire/firestore";
+import { tap } from "rxjs/operators";
+import Vue from "vue";
+export default {
+  name: "users",
+  data() {
+    return {
+      users: [],
+      filteredUsers: [],
+      usersRef: null,
+      search: ""
+    };
+  },
+  filters: {
+    capitalize: item => item.toUpperCase()
+  },
+  created() {
+    this.usersRef = db.collection("users");
+    collectionChanges(this.usersRef).subscribe(snapshot => {
+      snapshot.forEach(change => {
+        if (change.type === "added") {
+          let user = change.doc.data();
+          user.id = change.doc.id;
+          this.users.push(user);
+        } else if (change.type === "modified") {
+          for (var key in change.doc.data()) {
+            Vue.set(this.users, change.newIndex, {
+              ...this.users[change.newIndex],
+              [key]: change.doc.data()[key]
+            });
+          }
+        } else if (change.type === "removed") {
+          console.log("removing change: " + change);
+          this.users = this.users.filter(
+            user => user.id != change.doc.id
+          );
+        }
+        this.filteredUsers = [...this.users];
+      });
+    });
+  },
+  methods: {
+    getfilteredData: function() {
+      if (this.search === "") {
+        this.filteredUsers = [...this.users];
+      } else {
+        this.filteredUsers = this.users.filter(user =>
+          user.lastName.toUpperCase().includes(this.search.toUpperCase())
+        );
+      }
+    }
+  }
+};
+</script>
+
+<style scoped>
+.title {
+  font-size: 4.2rem;
+  font-weight: 400;
+  color: #444;
+  margin-left: 20px;
+}
+#first-name {
+  font-style: italic;
+}
+#last-name {
+  font-weight: bold;
+}
+h1 {
+  color: #444;
+}
+.card {
+  margin: 20px;
+}
+#edit a {
+  color: white;
+}
+.btn {
+  margin: 0 5px;
+  background-color: #42b983;
+  max-width: 50px;
+}
+</style>

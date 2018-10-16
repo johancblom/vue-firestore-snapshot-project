@@ -9,6 +9,7 @@ import EditPlot from "@/components/EditPlot";
 import NewPlot from "@/components/NewPlot";
 import Signin from "@/components/Signin";
 import Signup from "@/components/Signup";
+import Users from "@/components/Users";
 
 Vue.use(Router);
 
@@ -69,6 +70,11 @@ export default new Router({
       path: "/signup",
       name: "Signup",
       component: Signup
+    },
+    {
+      path: "/users",
+      name: "Users",
+      component: Users
     }
   ]
 });

@@ -23,7 +23,7 @@
   </div>
 </template>
 <script>
-import {fireAuth} from "@/firebase/init";
+import db, {fireAuth} from "@/firebase/init";
 
 export default {
   name: "signin",
@@ -31,6 +31,8 @@ export default {
     return {
       email: null,
       password: null,
+      firstName: null,
+      lastName: null,
       feedback: null
     }
   },
@@ -38,8 +40,13 @@ export default {
     signin: function() {
       console.log('submitting')
       fireAuth.createUserWithEmailAndPassword(this.email, this.password)
-        .then(() => {
+        .then((creds) => {
+          console.log(creds.user);
           this.feedback = null;
+          db.collection('users').doc(creds.user.uid).set({
+            firstName: this.firstName,
+            lastName: this.lastName
+          }, {merge: true});
           this.$router.push({name: 'home'})
         })
         .catch(error => {
