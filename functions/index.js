@@ -8,4 +8,5 @@ const functions = require("firebase-functions");
 // });
 exports.onUserCreate = functions.auth.user().onCreate(user => {
   console.log("user " + user.email + " was created");
+  return 0;
 });
