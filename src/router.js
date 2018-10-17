@@ -10,6 +10,7 @@ import NewPlot from "@/components/NewPlot";
 import Signin from "@/components/Signin";
 import Signup from "@/components/Signup";
 import Users from "@/components/Users";
+import Logout from "@/components/Logout";
 
 Vue.use(Router);
 
@@ -75,6 +76,11 @@ export default new Router({
       path: "/users",
       name: "Users",
       component: Users
+    },
+    {
+      path: "/logout",
+      name: "Logout",
+      component: Logout
     }
   ]
 });
