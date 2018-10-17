@@ -13,6 +13,34 @@
   </div>
 </template>
 
+<script>
+import {fireAuth} from "@/firebase/init";
+
+export default {
+  data() {
+    return {
+      adminUser: false
+    }
+  },
+  methods: {
+    login(user) {
+      fireAuth.currentUser.getIdTokenResult()
+      .then((idTokenResult) => {
+        if(!!idTokenResult.claims.admin) {
+          console.log('This is an admin user');
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+    }
+  },
+  created() {
+    fireAuth.onAuthStateChanged(this.login);
+  }
+}
+</script>
+
 <style>
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;

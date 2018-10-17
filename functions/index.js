@@ -27,3 +27,8 @@ exports.enableUser = functions.https.onCall((data, context) => {
     const uid = data.uid;
     admin.auth().updateUser(uid, {disabled: false})
 })
+
+exports.elevateUser = functions.https.onCall((data) => {
+  const uid = data.uid;
+  admin.auth().setCustomUserClaims(uid, {admin: true})
+})

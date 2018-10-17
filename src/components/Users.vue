@@ -23,7 +23,8 @@
               <p id="level">Level: {{user.level}}</p>
             </div>
             <div class="card-action">
-              <a class="btn-floating halfway-fab waves-effect waves-light red" @click="enable(user.id)"><i class="material-icons">edit</i></a>
+              <a v-if="user.status=='disabled'" class="btn-floating halfway-fab waves-effect waves-light green left" @click="enable(user.id)"><i class="material-icons">check</i></a>
+              <a v-if="user.level=='user'" class="btn-floating halfway-fab waves-effect waves-light red" @click="elevate(user.id)"><i class="material-icons">mode_edit</i></a>
             </div>
           </div>
         </div>
@@ -91,6 +92,12 @@ export default {
       let enableUser = firebase.functions().httpsCallable('enableUser');
       enableUser({uid: uid}).then((result) => {
         this.usersRef.doc(uid).update({status: "enabled"});
+      }).catch((err) => console.log(err));
+    },
+    elevate: function(uid) {
+      let elevateUser = firebase.functions().httpsCallable('elevateUser');
+      elevateUser({uid: uid}).then((result) => {
+        this.usersRef.doc(uid).update({level: 'admin'});
       }).catch((err) => console.log(err));
     }
   }
