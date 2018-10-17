@@ -19,13 +19,12 @@
             <div class="card-content">
               <p id="first-name">{{user.firstName}}</p>
               <p id="last-name">{{user.lastName | capitalize}}</p>
-              <p id="disabled">{{user.disabled}}</p>
-              <p id="level">{{user.level}}</p>
+              <p id="disabled">Status: {{user.status}}</p>
+              <p id="level">Level: {{user.level}}</p>
             </div>
-            <!-- <div class="card-action">
-              <router-link class="btn-floating left halfway-fab waves-effect green" :to="{ name: 'EditTenant', params: {tenant_id: tenant.id}}"><i class="material-icons">edit</i></router-link>
-              <a class="btn-floating halfway-fab waves-effect waves-light red" @click="remove(tenant.id)"><i class="material-icons">delete</i></a>
-            </div> -->
+            <div class="card-action">
+              <a class="btn-floating halfway-fab waves-effect waves-light red" @click="enable(user.id)"><i class="material-icons">edit</i></a>
+            </div>
           </div>
         </div>
     </div>
@@ -34,6 +33,9 @@
 
 <script>
 import db from "@/firebase/init";
+import firebase from 'firebase';
+import functions from 'firebase/functions';
+
 import { collectionData, collectionChanges } from "rxfire/firestore";
 import { tap } from "rxjs/operators";
 import Vue from "vue";
@@ -84,6 +86,12 @@ export default {
           user.lastName.toUpperCase().includes(this.search.toUpperCase())
         );
       }
+    },
+    enable: function(uid) {
+      let enableUser = firebase.functions().httpsCallable('enableUser');
+      enableUser({uid: uid}).then((result) => {
+        this.usersRef.doc(uid).update({status: "enabled"});
+      }).catch((err) => console.log(err));
     }
   }
 };

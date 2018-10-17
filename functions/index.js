@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require('firebase-admin');
+
 admin.initializeApp();
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -22,7 +23,7 @@ exports.onUserCreate = functions.auth.user().onCreate(user => {
   return 0;
 });
 
-exports.enableUser = functions.https.onRequest((request, response) => {
-  uid = request.data.uid;
-  admin.auth().updateUser(uid, {disabled: false})
+exports.enableUser = functions.https.onCall((data, context) => {
+    const uid = data.uid;
+    admin.auth().updateUser(uid, {disabled: false})
 })
