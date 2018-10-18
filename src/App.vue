@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link v-if="adminUser" to="/tenants">Tenants</router-link> |
-      <router-link v-if="adminUser" to="/plots">Plots</router-link> |
-      <router-link v-if="adminUser" to="/users">Users</router-link> |
-      <router-link v-if="loggedIn" to="/about">About</router-link> |
-      <router-link v-if="!loggedIn" to="/signin">Log in</router-link> |
-      <router-link v-if="!loggedIn" to="/signup">Sign up</router-link> |
+      <router-link to="/">| Home | </router-link>
+      <router-link v-if="adminUser" to="/tenants">Tenants |</router-link>
+      <router-link v-if="adminUser" to="/plots">Plots |</router-link>
+      <router-link v-if="adminUser" to="/users">Users |</router-link>
+      <router-link v-if="loggedIn" to="/about">About |</router-link>
+      <router-link v-if="!loggedIn" to="/signin">Log in |</router-link>
+      <router-link v-if="!loggedIn" to="/signup">Sign up |</router-link>
       <router-link v-if="loggedIn" to="/logout">Log out</router-link>
     </div>
     <router-view/>
