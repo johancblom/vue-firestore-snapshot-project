@@ -5,6 +5,7 @@
       <router-link v-if="adminUser" to="/tenants">| Tenants </router-link>
       <router-link v-if="adminUser" to="/plots">| Plots </router-link>
       <router-link v-if="adminUser" to="/users">| Users </router-link>
+      <router-link to="/invoices">| Invoices </router-link>
       <router-link v-if="loggedIn" to="/about">| About </router-link>
       <router-link v-if="!loggedIn" to="/signin">| Log in </router-link>
       <router-link v-if="!loggedIn" to="/signup">| Sign up </router-link>

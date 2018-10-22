@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require('firebase-admin');
+const pdfkit = require ('pdfkit');
 
 admin.initializeApp();
 // // Create and Deploy Your First Cloud Functions
@@ -31,4 +32,26 @@ exports.enableUser = functions.https.onCall((data, context) => {
 exports.elevateUser = functions.https.onCall((data) => {
   const uid = data.uid;
   admin.auth().setCustomUserClaims(uid, {admin: true})
+})
+
+exports.addedTenant = functions.firestore
+.document('tenants/{tenantId}')
+.onCreate((snap, context) => {
+  const myPdfFile = admin.storage().bucket().file('/tenants/'+snap.id+ '.pdf');
+
+    console.log("going into function 3");
+
+    const doc = new pdfkit();
+
+    console.log("going into function 4");
+
+    const stream = doc.pipe(myPdfFile.createWriteStream());
+
+    console.log("going into tenants db");
+
+    admin.firestore().collection('tenants').doc(snap.id).get().then((dc) => {
+        console.log(dc.data());
+        doc.fontSize(25).text(dc.data().lastName);
+      doc.end();
+    });
 })
