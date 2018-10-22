@@ -7,13 +7,14 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "firebase": "^5.5.3",
+    "firebase": "^5.5.5",
     "firebase-cli": "^1.2.0",
-    "rxfire": "^3.0.5",
+    "rxfire": "^3.0.7",
     "rxjs": "^6.3.3",
     "vue": "^2.5.17",
+    "vue-pdf": "^3.3.1",
     "vue-router": "^3.0.1",
-    "vue-slider-component": "^2.7.9"
+    "vue-slider-component": "^2.8.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.4",

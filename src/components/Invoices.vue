@@ -14,6 +14,7 @@
         <div>
           <a id="invoices"></a>
         </div>
+        <pdf src="https://firebasestorage.googleapis.com/v0/b/vue-firestore-snapshot-project.appspot.com/o/tenants%2Flz21ohLxbfGoWOLe58V7.pdf?alt=media&token=b9d352b7-afc8-4fa5-a88e-994eef02a0d1"></pdf>
       </div>
     </form>
   </div>
@@ -23,10 +24,15 @@
 import db from "@/firebase/init";
 import { collectionData, collectionChanges } from "rxfire/firestore";
 import { tap } from "rxjs/operators";
-import firebase from 'firebase';
+import firebase from "firebase";
 import Vue from "vue";
+import pdf from "vue-pdf";
+
 export default {
   name: "tenants",
+  components: {
+    pdf
+  },
   data() {
     return {
       storageRef: null,
@@ -39,26 +45,28 @@ export default {
   },
   created() {
     const storage = firebase.storage();
-    this.storageRef = storage.refFromURL('gs://vue-firestore-snapshot-project.appspot.com')
+    this.storageRef = storage.refFromURL(
+      "gs://vue-firestore-snapshot-project.appspot.com"
+    );
     this.tenantsRef = db.collection("tenants");
-    this.tenantsRef.get().then(snap => {
-      snap.forEach(doc => {
-        this.storageRef.child(`tenants\/${doc.id}.pdf`).getDownloadURL().then(url => {
-          const xhr = new XMLHttpRequest();
-          xhr.responseType = 'blob';
-          xhr.onload = event => {
-            const blob = xhr.response;
-            console.log(blob);
-            const link = document.getElementById('invoices')
-            link.href= window.URL.createObjectURL(blob)
-            link.download='test.pdf'
-            link.click()
-          };
-          xhr.open('GET', url);
-          xhr.send();
-        })
-      })
-    })
+    // this.tenantsRef.get().then(snap => {
+    //   snap.forEach(doc => {
+    //     this.storageRef.child(`tenants\/${doc.id}.pdf`).getDownloadURL().then(url => {
+    //       const xhr = new XMLHttpRequest();
+    //       xhr.responseType = 'blob';
+    //       xhr.onload = event => {
+    //         const blob = xhr.response;
+    //         console.log(blob);
+    //         const link = document.getElementById('invoices')
+    //         link.href= window.URL.createObjectURL(blob)
+    //         link.download='test.pdf'
+    //         link.click()
+    //       };
+    //       xhr.open('GET', url);
+    //       xhr.send();
+    //     })
+    //   })
+    // })
   },
   methods: {
     remove: function(id) {
