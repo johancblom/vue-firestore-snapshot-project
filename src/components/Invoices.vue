@@ -47,7 +47,7 @@ export default {
   },
   mounted() {
     const storageRef = storage.ref();
-    const invoicesRef = storageRef.child('tenants/little-book-joy.pdf');
+    const invoicesRef = storageRef.child('tenants/out.pdf');
     const path = invoicesRef.fullPath;
     invoicesRef.getDownloadURL().then(url => {
       this.url = url
