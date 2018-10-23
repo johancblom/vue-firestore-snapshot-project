@@ -7,7 +7,7 @@ var config = {
   authDomain: "vue-firestore-snapshot-project.firebaseapp.com",
   databaseURL: "https://vue-firestore-snapshot-project.firebaseio.com",
   projectId: "vue-firestore-snapshot-project",
-  storageBucket: "",
+  storageBucket: "vue-firestore-snapshot-project.appspot.com",
   messagingSenderId: "868145912693"
 };
 
@@ -15,11 +15,13 @@ const firebaseApp = firebase.initializeApp(config);
 firebaseApp.firestore().settings({ timestampsInSnapshots: true});
 
 const db = firebaseApp.firestore()
+const storage = firebase.storage()
 const fireAuth = firebaseApp.auth()
 const functions = firebaseApp.functions()
 
 export {
   db as default,
+  storage,
   fireAuth,
   functions
 }

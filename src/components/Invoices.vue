@@ -14,7 +14,7 @@
       </div>
       <div class="row">
         <div class = "col s12" >
-          <pdf v-for="doc in pdfList" :key=doc.id :src=doc.address class="invoice" ></pdf>
+          <pdf :src="url" :page="1" @num-pages="showNumberOfPages($event)" class="invoice" ></pdf>
         </div>
       </div>
     </form>
@@ -23,6 +23,7 @@
 
 <script>
 import db from "@/firebase/init";
+import { storage } from "@/firebase/init";
 import { collectionData, collectionChanges } from "rxfire/firestore";
 import { tap } from "rxjs/operators";
 import firebase from "firebase";
@@ -36,28 +37,23 @@ export default {
   },
   data() {
     return {
-      storageRef: null,
-      tenantsRef: null,
       search: "",
-      pdfList: []
+      pdfList: [],
+      url: ""
     };
   },
   filters: {
     capitalize: item => item.toUpperCase()
   },
-  created() {
-    const storage = firebase.storage();
-    this.storageRef = storage.refFromURL(
-      "gs://vue-firestore-snapshot-project.appspot.com"
-    );
-    this.tenantsRef = db.collection("tenants");
-    this.tenantsRef.get().then(snap => {
-      snap.forEach(doc => {
-        if (doc.id != 'nobody') {
-          this.pdfList.push({id: doc.id, address: 'https://firebasestorage.googleapis.com/v0/b/vue-firestore-snapshot-project.appspot.com/o/tenants%2F'+doc.id+'.pdf?alt=media'});
-        }
-      })
-    })
+  mounted() {
+    const storageRef = storage.ref();
+    const invoicesRef = storageRef.child('tenants/little-book-joy.pdf');
+    const path = invoicesRef.fullPath;
+    invoicesRef.getDownloadURL().then(url => {
+      this.url = url
+    }).catch(err => console.log(err));
+
+    
   },
   methods: {
     remove: function(id) {
@@ -77,6 +73,9 @@ export default {
           tenant.lastName.toUpperCase().includes(this.search.toUpperCase())
         );
       }
+    },
+    showNumberOfPages: function(e) {
+      console.log(e);
     }
   }
 };
