@@ -39,19 +39,34 @@ exports.addedTenant = functions.firestore
 .onCreate((snap, context) => {
   const myPdfFile = admin.storage().bucket().file('/tenants/'+snap.id+ '.pdf');
 
-    console.log("going into function 3");
+  console.log("going into function 3");
 
-    const doc = new pdfkit();
+  let doc = new pdfkit();
 
-    console.log("going into function 4");
+  console.log("going into function 4");
 
-    const stream = doc.pipe(myPdfFile.createWriteStream());
+  let stream = doc.pipe(myPdfFile.createWriteStream());
 
-    console.log("going into tenants db");
+  console.log("going into tenants db");
 
-    admin.firestore().collection('tenants').doc(snap.id).get().then((dc) => {
-        console.log(dc.data());
-        doc.fontSize(25).text(dc.data().lastName);
-      doc.end();
-    });
+  admin.firestore().collection('tenants').doc(snap.id).get().then((dc) => {
+      console.log(dc.data());
+      doc.fontSize(25).text(dc.data().lastName);
+    doc.end();
+  });
+  
+  const allTenantsFile = admin.storage().bucket().file('/tenants/allTenants.pdf');
+
+  doc = new pdfkit();
+
+  stream = doc.pipe(allTenantsFile.createWriteStream());
+
+  admin.firestore().collection('tenants').get().then(snap => {
+    snap.forEach(tenant => {
+      doc.addPage().fontSize(25).text(tenant.data().lastName)
+    })
+    doc.end()
+  })
+
+
 })
