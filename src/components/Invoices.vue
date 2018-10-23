@@ -11,10 +11,11 @@
         <div class="col s3">
           <input type="text" class="form-control" placeholder="Enter a name  ..." v-model="search">
         </div>
-        <div>
-          <a id="invoices"></a>
+      </div>
+      <div class="row">
+        <div class = "col s12" >
+          <pdf v-for="doc in pdfList" :key=doc.id :src=doc.address class="invoice" ></pdf>
         </div>
-        <pdf src="https://firebasestorage.googleapis.com/v0/b/vue-firestore-snapshot-project.appspot.com/o/tenants%2Flz21ohLxbfGoWOLe58V7.pdf?alt=media&token=b9d352b7-afc8-4fa5-a88e-994eef02a0d1"></pdf>
       </div>
     </form>
   </div>
@@ -37,7 +38,8 @@ export default {
     return {
       storageRef: null,
       tenantsRef: null,
-      search: ""
+      search: "",
+      pdfList: []
     };
   },
   filters: {
@@ -49,24 +51,13 @@ export default {
       "gs://vue-firestore-snapshot-project.appspot.com"
     );
     this.tenantsRef = db.collection("tenants");
-    // this.tenantsRef.get().then(snap => {
-    //   snap.forEach(doc => {
-    //     this.storageRef.child(`tenants\/${doc.id}.pdf`).getDownloadURL().then(url => {
-    //       const xhr = new XMLHttpRequest();
-    //       xhr.responseType = 'blob';
-    //       xhr.onload = event => {
-    //         const blob = xhr.response;
-    //         console.log(blob);
-    //         const link = document.getElementById('invoices')
-    //         link.href= window.URL.createObjectURL(blob)
-    //         link.download='test.pdf'
-    //         link.click()
-    //       };
-    //       xhr.open('GET', url);
-    //       xhr.send();
-    //     })
-    //   })
-    // })
+    this.tenantsRef.get().then(snap => {
+      snap.forEach(doc => {
+        if (doc.id != 'nobody') {
+          this.pdfList.push({id: doc.id, address: 'https://firebasestorage.googleapis.com/v0/b/vue-firestore-snapshot-project.appspot.com/o/tenants%2F'+doc.id+'.pdf?alt=media'});
+        }
+      })
+    })
   },
   methods: {
     remove: function(id) {
@@ -117,5 +108,11 @@ h1 {
   margin: 0 5px;
   background-color: #42b983;
   max-width: 50px;
+}
+
+.invoice {
+  border: solid black; 
+  border-width: 1px;
+  margin: 20px;
 }
 </style>
