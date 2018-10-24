@@ -63,7 +63,8 @@ exports.addedTenant = functions.firestore
 
   admin.firestore().collection('tenants').get().then(snap => {
     snap.forEach(tenant => {
-      doc.addPage().fontSize(25).text(tenant.data().lastName)
+      doc.addPage()
+      doc.fontSize(25).text(tenant.data().lastName)
     })
     doc.end()
   })

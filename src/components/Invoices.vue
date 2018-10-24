@@ -13,9 +13,12 @@
         </div>
       </div>
       <div class="row">
+        <button class="btn" @click="decrementPage" :disabled="page==1"><i class="material-icons">chevron_left</i></button>
+        <button class="btn" @click="incrementPage" :disabled="page==numPages"><i class="material-icons">chevron_right</i></button>
         <div class = "col s12" >
-          <pdf :src="url" :page="1" @num-pages="showNumberOfPages($event)" class="invoice" ></pdf>
+          <pdf ref="pdfComponent" :src="url" :page="page" @num-pages="showNumberOfPages($event)" class="invoice" ></pdf>
         </div>
+        <button class="btn" @click="$refs.pdfComponent.print()"><i class="material-icons">print</i></button>
       </div>
     </form>
   </div>
@@ -39,7 +42,9 @@ export default {
     return {
       search: "",
       pdfList: [],
-      url: ""
+      url: "",
+      numPages: 0,
+      page: 1
     };
   },
   filters: {
@@ -47,7 +52,7 @@ export default {
   },
   mounted() {
     const storageRef = storage.ref();
-    const invoicesRef = storageRef.child('tenants/out.pdf');
+    const invoicesRef = storageRef.child('tenants/allTenants.pdf');
     const path = invoicesRef.fullPath;
     invoicesRef.getDownloadURL().then(url => {
       this.url = url
@@ -75,8 +80,23 @@ export default {
       }
     },
     showNumberOfPages: function(e) {
-      console.log(e);
+      this.numPages = e;
+    },
+    incrementPage: function() {
+      if (this.page == this.numPages) {
+        null;
+      } else {
+        this.page++;
+      }
+    },
+    decrementPage: function() {
+      if (this.page == 1) {
+        null;
+      } else {
+        this.page--;
+      }
     }
+
   }
 };
 </script>
@@ -113,5 +133,7 @@ h1 {
   border: solid black; 
   border-width: 1px;
   margin: 20px;
+  display: inline-block;
+  width: 50%;
 }
 </style>
