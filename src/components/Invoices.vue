@@ -40,6 +40,11 @@ export default {
   },
   data() {
     return {
+      tenants: [],
+      filteredTenants: [],
+      tenantsRef: null,
+      storageRef: null,
+      invoicesRef: null,
       search: "",
       pdfList: [],
       url: "",
@@ -50,15 +55,15 @@ export default {
   filters: {
     capitalize: item => item.toUpperCase()
   },
-  mounted() {
-    const storageRef = storage.ref();
-    const invoicesRef = storageRef.child('tenants/allTenants.pdf');
-    const path = invoicesRef.fullPath;
-    invoicesRef.getDownloadURL().then(url => {
-      this.url = url
-    }).catch(err => console.log(err));
-
-    
+  created() {
+    this.tenantsRef = db.collection("tenants");
+    this.tenantsRef.get().then(snap => {
+      snap.forEach(tenant => {
+        this.tenants.push({id: tenant.id, lastName: tenant.data().lastName})
+      })
+    })
+    this.storageRef = storage.ref();
+    this.invoicesRef = this.storageRef.child('tenants/allTenants.pdf');
   },
   methods: {
     remove: function(id) {
@@ -71,13 +76,16 @@ export default {
         .catch(err => console.log(err));
     },
     getfilteredData: function() {
-      if (this.search === "") {
-        this.filteredTenants = [...this.tenants];
+      if (this.search !== "") {
+        const id = this.tenants.filter(tenant => tenant.lastName == this.search)[0].id
+        this.invoicesRef = this.storageRef.child('tenants/'+id+'.pdf')
+        this.page = 1
       } else {
-        this.filteredTenants = this.tenants.filter(tenant =>
-          tenant.lastName.toUpperCase().includes(this.search.toUpperCase())
-        );
+        this.invoicesRef = this.storageRef.child('tenants/allTenants.pdf')
       }
+      this.invoicesRef.getDownloadURL().then(url => {
+        this.url = url
+      }).catch(err => console.log(err));
     },
     showNumberOfPages: function(e) {
       this.numPages = e;
@@ -134,6 +142,6 @@ h1 {
   border-width: 1px;
   margin: 20px;
   display: inline-block;
-  width: 50%;
+  width: 100%;
 }
 </style>
