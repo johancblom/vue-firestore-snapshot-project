@@ -39,12 +39,12 @@ exports.addedTenant = functions.firestore
 .onCreate((snap, context) => {
   const myPdfFile = admin.storage().bucket().file('/tenants/'+snap.id+ '.pdf');
 
-  let tenantDoc = new pdfkit();
+  let tenantDoc = new pdfkit({autoFirstPage: false});
 
   let tenantStream = tenantDoc.pipe(myPdfFile.createWriteStream());
 
   admin.firestore().collection('tenants').doc(snap.id).get().then((dc) => {
-      tenantDoc.fontSize(25).text(dc.data().lastName);
+    createInvoice(dc, tenantDoc);
     tenantDoc.end();
   });
   
@@ -56,19 +56,24 @@ exports.addedTenant = functions.firestore
 
   admin.firestore().collection('tenants').get().then(snap => {
     snap.forEach(tenant => {
-      tenantsDoc.addPage({margins: {top: 50, bottom: 50, left: 72, right: 72}})
-      tenantsDoc.fontSize(25).text('Invoice')
-      tenantsDoc.moveTo(70, 100)
-      .lineTo(500, 100)
-      .stroke()
-      tenantsDoc.fontSize(13)
-      tenantsDoc.x = 70
-      tenantsDoc.y - 120
-      tenantsDoc.text('Name: ')
-      tenantsDoc.text(tenant.data().lastName)
+      console.log(tenant.id)
+      tenant.id == 'nobody' ? null: createInvoice(tenant, tenantsDoc)
     })
     tenantsDoc.end()
   })
-
-
 })
+
+function createInvoice(tenant, doc) {
+  doc.addPage({margins: {top: 50, bottom: 50, left: 72, right: 72}})
+  doc.fontSize(25).text('Invoice')
+  doc.moveTo(70, 100)
+  .lineTo(500, 100)
+  .stroke()
+  doc.fontSize(13)
+  doc.x = 70
+  doc.y = 120
+  doc.text('Name: ')
+  doc.x = 120
+  doc.y = 120
+  doc.text(tenant.data().lastName)
+}

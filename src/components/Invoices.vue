@@ -64,6 +64,7 @@ export default {
     })
     this.storageRef = storage.ref();
     this.invoicesRef = this.storageRef.child('tenants/allTenants.pdf');
+    this.getfilteredData();
   },
   methods: {
     remove: function(id) {
