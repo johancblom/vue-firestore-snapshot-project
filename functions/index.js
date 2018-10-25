@@ -44,36 +44,78 @@ exports.addedTenant = functions.firestore
   let tenantStream = tenantDoc.pipe(myPdfFile.createWriteStream());
 
   admin.firestore().collection('tenants').doc(snap.id).get().then((dc) => {
-    createInvoice(dc, tenantDoc);
-    tenantDoc.end();
+    return createInvoice(dc, tenantDoc).then(
+      doc => {
+        console.log('doc created');
+        tenantDoc.end();
+      })
   });
   
-  const allTenantsFile = admin.storage().bucket().file('/tenants/allTenants.pdf');
+  // const allTenantsFile = admin.storage().bucket().file('/tenants/allTenants.pdf');
 
-  const tenantsDoc = new pdfkit({autoFirstPage: false});
+  // const tenantsDoc = new pdfkit({autoFirstPage: false});
 
-  let tenantsStream = tenantsDoc.pipe(allTenantsFile.createWriteStream());
+  // let tenantsStream = tenantsDoc.pipe(allTenantsFile.createWriteStream());
 
-  admin.firestore().collection('tenants').get().then(snap => {
-    snap.forEach(tenant => {
-      console.log(tenant.id)
-      tenant.id == 'nobody' ? null: createInvoice(tenant, tenantsDoc)
-    })
-    tenantsDoc.end()
-  })
+  // admin.firestore().collection('tenants').get().then(snap => {
+  //   Promise.all(snap.forEach(tenant => createInvoice(tenant, tenantsDoc))).then(doc => {
+  //     console.log("doc created");
+  //     tenantsDoc.end()
+  //   })
+  // })
 })
 
 function createInvoice(tenant, doc) {
-  doc.addPage({margins: {top: 50, bottom: 50, left: 72, right: 72}})
-  doc.fontSize(25).text('Invoice')
-  doc.moveTo(70, 100)
-  .lineTo(500, 100)
-  .stroke()
-  doc.fontSize(13)
-  doc.x = 70
-  doc.y = 120
-  doc.text('Name: ')
-  doc.x = 120
-  doc.y = 120
-  doc.text(tenant.data().lastName)
+  return new Promise(
+    function(resolve, reject) {
+      const plots = []
+      admin.firestore().collection('plots').where('tenant', '==', tenant.id).get().then(snap => {
+        snap.forEach(plot =>{
+          console.log('plot.id to be added: ' + plot.id)
+          plots.push(plot.id)
+        })
+        console.log("plots: " + plots.toString())
+        doc.addPage({margins: {top: 50, bottom: 50, left: 72, right: 72}})
+        doc.fontSize(25).text('Invoice')
+        doc.moveTo(70, 100)
+        .lineTo(500, 100)
+        .stroke()
+        doc.fontSize(13)
+        doc.x = 70
+        doc.y = 120
+        doc.text('Name: ')
+        doc.x = 120
+        doc.y = 120
+        doc.text(tenant.data().lastName)
+        doc.x = 70
+        doc.moveDown
+        doc.text('Plots:')
+        doc.x = 120
+        doc.y = 135
+        doc.text(plots.toString())
+        resolve(doc)
+      },
+      () => {
+        doc.addPage({margins: {top: 50, bottom: 50, left: 72, right: 72}})
+        doc.fontSize(25).text('Invoice')
+        doc.moveTo(70, 100)
+        .lineTo(500, 100)
+        .stroke()
+        doc.fontSize(13)
+        doc.x = 70
+        doc.y = 120
+        doc.text('Name: ')
+        doc.x = 120
+        doc.y = 120
+        doc.text(tenant.data().lastName)
+        doc.x = 70
+        doc.moveDown
+        doc.text('Plots:')
+        doc.x = 120
+        doc.y = 135
+        doc.text(plots.map(plot => plot.id).toString())
+        resolve(doc)
+      })
+    }
+  )
 }
