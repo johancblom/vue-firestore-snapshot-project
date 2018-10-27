@@ -34,8 +34,8 @@
 
 <script>
 import db from "@/firebase/init";
-import firebase from 'firebase';
-import functions from 'firebase/functions';
+import firebase from "firebase";
+import functions from "firebase/functions";
 
 import { collectionData, collectionChanges } from "rxfire/firestore";
 import { tap } from "rxjs/operators";
@@ -70,9 +70,7 @@ export default {
           }
         } else if (change.type === "removed") {
           console.log("removing change: " + change);
-          this.users = this.users.filter(
-            user => user.id != change.doc.id
-          );
+          this.users = this.users.filter(user => user.id != change.doc.id);
         }
         this.filteredUsers = [...this.users];
       });
@@ -89,22 +87,26 @@ export default {
       }
     },
     enable: function(uid) {
-      let enableUser = firebase.functions().httpsCallable('enableUser');
-      enableUser({uid: uid}).then((result) => {
-        this.usersRef.doc(uid).update({status: "enabled"});
-      }).catch((err) => console.log(err));
+      let enableUser = firebase.functions().httpsCallable("enableUser");
+      enableUser({ uid: uid })
+        .then(result => {
+          this.usersRef.doc(uid).update({ status: "enabled" });
+        })
+        .catch(err => console.log(err));
     },
     elevate: function(uid) {
-      let elevateUser = firebase.functions().httpsCallable('elevateUser');
-      elevateUser({uid: uid}).then((result) => {
-        this.usersRef.doc(uid).update({level: 'admin'});
-      }).catch((err) => console.log(err));
+      let elevateUser = firebase.functions().httpsCallable("elevateUser");
+      elevateUser({ uid: uid })
+        .then(result => {
+          this.usersRef.doc(uid).update({ level: "admin" });
+        })
+        .catch(err => console.log(err));
     }
   }
 };
 </script>
 
-<style>
+<style scoped>
 .title {
   font-size: 4.2rem;
   font-weight: 400;
